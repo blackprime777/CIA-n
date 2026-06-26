@@ -235,7 +235,7 @@
         <div class="header-right">
             <div id="live-time" style="font-size:1.05em;"></div>
             <div onclick="alert('Operational wallet — funds update during active exploits.')" style="cursor:pointer;">
-                💼 $<span id="wallet-balance">330000</span>.00
+                💼 $<span id="wallet-balance">900</span>.00
             </div>
             <div id="device-info" style="font-size:0.95em; opacity:0.85;"></div>
         </div>
@@ -273,7 +273,7 @@
 
 <script>
 // Variables
-let balance = 330000;
+let balance = 900;
 let termOutput = document.getElementById('term-output');
 
 // Login
@@ -350,7 +350,7 @@ function simulateLongOperation(option) {
     ];
 
     let count = 0;
-    const maxCycles = 18; // Long runtime (~90+ seconds)
+    const maxCycles = 18;
 
     const interval = setInterval(() => {
         if (count < logs.length * maxCycles) {
