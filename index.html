@@ -21,12 +21,11 @@
             background: var(--darker);
             color: var(--green);
             font-family: 'Share Tech Mono', monospace;
-            overflow-y: auto;
+            overflow: hidden;
             height: 100vh;
-            image-rendering: pixelated;
         }
         
-        /* LOGIN SCREEN */
+        /* LOGIN */
         #login-screen {
             position: fixed;
             inset: 0;
@@ -35,7 +34,6 @@
             align-items: center;
             justify-content: center;
             z-index: 1000;
-            flex-direction: column;
         }
         
         .login-box {
@@ -51,15 +49,9 @@
         .login-box h1 {
             font-family: 'VT323', monospace;
             font-size: 2.8em;
-            margin: 0 0 10px 0;
+            margin: 0 0 10px;
             letter-spacing: 6px;
             text-shadow: 0 0 10px var(--green);
-        }
-        
-        .login-box p {
-            margin: 5px 0 25px;
-            color: #00cc33;
-            font-size: 1.2em;
         }
         
         input {
@@ -94,9 +86,7 @@
         /* HEADER */
         .header {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
+            top: 0; left: 0; right: 0;
             height: 52px;
             background: #0a0a0a;
             border-bottom: 3px solid var(--green);
@@ -105,56 +95,51 @@
             justify-content: space-between;
             padding: 0 25px;
             z-index: 900;
-            font-size: 1.15em;
+            font-size: 1.1em;
             user-select: none;
         }
         
-        .header-left { display: flex; align-items: center; gap: 20px; }
-        .header-right { display: flex; align-items: center; gap: 28px; }
-        
-        .status-dot { color: #00ff41; animation: pulse 2s infinite; }
+        .status-dot { color: var(--green); animation: pulse 2s infinite; }
         @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
         
         /* TERMINAL */
-        .terminal-container {
-            margin: 70px 20px 80px;
+        #terminal {
+            margin: 70px 20px 60px;
             max-width: 1280px;
             margin-left: auto;
             margin-right: auto;
-        }
-        
-        .terminal-window {
+            height: calc(100vh - 130px);
             background: #0a0a0a;
             border: 3px solid var(--green);
-            height: 72vh;
-            min-height: 520px;
-            overflow-y: auto;
-            padding: 20px;
-            font-size: 1.35em;
-            line-height: 1.45;
+            display: flex;
+            flex-direction: column;
             box-shadow: inset 0 0 60px rgba(0, 255, 65, 0.08);
-            scrollbar-width: thin;
+        }
+        
+        #output {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            font-size: 1.32em;
+            line-height: 1.5;
             scrollbar-color: var(--green) #111;
         }
         
-        .terminal-window::-webkit-scrollbar { width: 8px; }
-        .terminal-window::-webkit-scrollbar-thumb { background: var(--green); }
+        #output::-webkit-scrollbar { width: 8px; }
+        #output::-webkit-scrollbar-thumb { background: var(--green); }
         
         .prompt-line {
             display: flex;
-            margin-bottom: 4px;
+            padding: 0 20px 12px;
+            background: #0a0a0a;
         }
         
-        .prompt {
-            color: #00cc33;
-            margin-right: 8px;
-            white-space: pre;
-        }
-        
+        .prompt { color: #00cc33; white-space: pre; }
         .output { color: #aaffaa; }
         .error { color: #ff6666; }
+        .success { color: #00ffaa; }
         
-        #term-input {
+        #input-line {
             background: transparent;
             border: none;
             color: var(--green);
@@ -164,34 +149,15 @@
             outline: none;
         }
         
-        /* MODALS */
-        .modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.96);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-        }
-        
-        .modal-content {
-            border: 3px solid var(--green);
-            background: #111;
-            padding: 35px;
-            max-width: 620px;
-            width: 90%;
-        }
-        
         .scanline {
             position: fixed;
             inset: 0;
-            background: linear-gradient(transparent 50%, rgba(0,255,65,0.04) 50%);
+            background: linear-gradient(transparent 50%, rgba(0,255,65,0.03) 50%);
             background-size: 100% 6px;
             pointer-events: none;
             animation: scan 4s linear infinite;
             z-index: 5;
-            opacity: 0.35;
+            opacity: 0.3;
         }
         
         @keyframes scan { 0% { transform: translateY(-100%); } 100% { transform: translateY(400%); } }
@@ -201,11 +167,9 @@
             bottom: 12px;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 0.95em;
+            font-size: 0.9em;
             color: #004d00;
             z-index: 800;
-            text-align: center;
-            max-width: 90%;
         }
     </style>
 </head>
@@ -216,81 +180,72 @@
     <div class="login-box">
         <h1>STRATCOM</h1>
         <p>SECURE TUNNEL v9.7 — ROOT ACCESS</p>
-        <input type="text" id="username" value="admin" readonly>
+        <input type="text" value="admin" readonly>
         <input type="password" id="pass" placeholder="ENTER PASSPHRASE" autofocus>
         <button onclick="login()">AUTHENTICATE TUNNEL</button>
         <div id="login-msg" style="margin-top:15px; min-height:24px; color:#ff4444;"></div>
     </div>
 </div>
 
-<!-- MAIN UI -->
-<div id="main-ui" style="display:none;">
+<!-- MAIN -->
+<div id="main-ui" style="display:none; height:100vh;">
     <div class="header">
-        <div class="header-left">
-            <span onclick="showServers()" style="cursor:pointer;">
-                <span class="status-dot">●</span> ROOT@STRATCOM <span style="color:#00cc33;">LIVE</span>
-            </span>
+        <div>
+            <span class="status-dot">●</span> ROOT@STRATCOM <span style="color:#00cc33;">LIVE</span>
         </div>
-        
-        <div class="header-right">
-            <div id="live-time" style="font-size:1.05em;"></div>
-            <div onclick="alert('Operational wallet — funds update during active exploits.')" style="cursor:pointer;">
-                💼 $<span id="wallet-balance">900</span>.00
-            </div>
-            <div id="device-info" style="font-size:0.95em; opacity:0.85;"></div>
-        </div>
+        <div id="live-time"></div>
+        <div>💼 $<span id="wallet-balance">1240</span>.00</div>
     </div>
 
-    <div class="terminal-container">
-        <div class="terminal-window" id="term-output"></div>
-        <div class="prompt-line" style="margin-top:8px;">
-            <span class="prompt">admin@stratcom:~/admin$ </span>
-            <input type="text" id="term-input" autocomplete="off" onkeydown="if(event.key==='Enter') handleCommand(this.value);">
+    <div id="terminal">
+        <div id="output"></div>
+        <div class="prompt-line">
+            <span class="prompt">root@stratcom:~/admin$ </span>
+            <input id="input-line" autocomplete="off" autofocus>
         </div>
-    </div>
-</div>
-
-<!-- SERVERS MODAL -->
-<div id="servers-modal" class="modal">
-    <div class="modal-content">
-        <h2 style="margin-top:0;">LIVE ENDPOINTS — GLOBAL TUNNEL</h2>
-        <ul style="font-size:1.35em; line-height:2.1em; padding-left:20px;">
-            <li>1. Delaware, US → 104.18.45.67</li>
-            <li>2. New York, US → 172.67.198.12</li>
-            <li>3. Tokyo, JP → 45.76.128.45</li>
-            <li>4. London, UK → 185.199.108.153</li>
-            <li>5. Moscow, RU → 91.108.12.77</li>
-        </ul>
-        <button onclick="hideModal()" style="margin-top:25px; width:100%; padding:14px;">CLOSE TUNNEL VIEW</button>
     </div>
 </div>
 
 <div class="scanline"></div>
-
-<div class="disclaimer">
-    END-TO-END SIMULATED ENVIRONMENT • ALL OPERATIONS TUNNELED VIA SHA-256 
-</div>
+<div class="disclaimer">SIMULATED ENVIRONMENT • SHA-256 TUNNELED • FOR TRAINING PURPOSES ONLY</div>
 
 <script>
-// Variables
-let balance = 900;
-let termOutput = document.getElementById('term-output');
+// Fake filesystem
+const filesystem = {
+    'wallet.txt': 'Current balance: $1240.00 | Last tx: 0xA3f...9kL2',
+    'zero-day.txt': 'CVE-2026-EXPLOIT-7 | Zero-day for latest Apache Struts variant',
+    'server.root': 'Access level: ROOT | Last compromised: 2 hours ago',
+    'recon-log-2026.txt': 'Targets: 47 active | High value: 12',
+    'hashdump.bin': '[BINARY DATA - 2.4GB] NTLM hashes extracted'
+};
 
-// Login
+let balance = 1240;
+let history = [];
+let historyIndex = -1;
+
+const output = document.getElementById('output');
+const input = document.getElementById('input-line');
+
+function append(text, cls = 'output') {
+    const line = document.createElement('div');
+    line.className = cls;
+    line.textContent = text;
+    output.appendChild(line);
+    output.scrollTop = output.scrollHeight;
+}
+
 function login() {
-    const pass = document.getElementById('pass').value.trim();
-    if (pass === "admin") {
+    if (document.getElementById('pass').value.trim() === "admin") {
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('main-ui').style.display = 'block';
         initTerminal();
-        document.getElementById('term-input').focus();
+        input.focus();
     } else {
-        document.getElementById('login-msg').textContent = "ACCESS DENIED — INVALID PASSPHRASE";
-        setTimeout(() => document.getElementById('login-msg').textContent = '', 2200);
+        document.getElementById('login-msg').textContent = "ACCESS DENIED";
+        setTimeout(() => document.getElementById('login-msg').textContent = '', 2000);
     }
 }
 
-// Clock
 function updateClock() {
     const now = new Date();
     document.getElementById('live-time').textContent = now.toLocaleString('en-GB', {timeZone: 'UTC'}) + " UTC";
@@ -298,107 +253,101 @@ function updateClock() {
 setInterval(updateClock, 1000);
 updateClock();
 
-// Device
-document.getElementById('device-info').textContent = `${navigator.platform} • ${navigator.userAgent.split('(')[0].trim()}`;
-
-// Servers
-function showServers() {
-    document.getElementById('servers-modal').style.display = 'flex';
-}
-function hideModal() {
-    document.getElementById('servers-modal').style.display = 'none';
-}
-
-// Terminal Core
-function appendLine(text, cls = 'output') {
-    const line = document.createElement('div');
-    line.className = cls;
-    line.textContent = text;
-    termOutput.appendChild(line);
-    termOutput.scrollTop = termOutput.scrollHeight;
-}
-
 function initTerminal() {
-    appendLine("STRATCOM ROOT v9.7 — TUNNEL ESTABLISHED", "output");
-    appendLine("Initializing SHA-256 encrypted session...", "output");
-    appendLine("cd admin", "output");
-    appendLine("admin@stratcom:~/admin$ ls", "output");
-    appendLine("wallet.txt     zero-day.txt     server.root     exploit-chain.sh     hashdump.bin     recon-log-2026.txt", "output");
-    appendLine("Type 1 → Launch Zero-Day Server", "output");
-    appendLine("Type 2 → Exploit Target Hash", "output");
+    append("STRATCOM ROOT v9.7 — TUNNEL ESTABLISHED", "success");
+    append("Type 'help' for available commands.");
+    append("");
 }
 
-function simulateLongOperation(option) {
-    termOutput.innerHTML = '';
-    const title = option === 1 ? "ZERO-DAY SERVER EXPLOIT CHAIN" : "HASH EXPLOIT + WALLET INJECTION";
-    appendLine(`[+] LAUNCHING ${title}`, "output");
-    appendLine("[+] Establishing quantum-resistant SHA-256 tunnel...", "output");
-
-    const logs = [
-        "[+] OSINT: Harvesting public records & metadata",
-        "[+] Passive recon: DNS enumeration complete",
-        "[+] Active scanning: Nmap fingerprinting",
-        "[+] Vulnerability analysis: 47 vectors identified",
-        "[+] CVE matching & exploit crafting",
-        "[+] Bypassing IDS/IPS layer 7",
-        "[+] Privilege escalation vector active",
-        "[+] Lateral movement across endpoints",
-        "[+] Payload delivered — root shell obtained",
-        "[+] Exfiltrating session tokens",
-        "[+] Wallet injection vector engaged",
-        "[+] Transaction broadcast confirmed"
-    ];
-
-    let count = 0;
-    const maxCycles = 18;
-
-    const interval = setInterval(() => {
-        if (count < logs.length * maxCycles) {
-            appendLine(logs[count % logs.length]);
-            if (Math.random() > 0.65) {
-                const gain = Math.floor(Math.random() * 680) + 120;
-                balance += gain;
-                document.getElementById('wallet-balance').textContent = balance.toLocaleString();
-            }
-            count++;
-        } else {
-            clearInterval(interval);
-            appendLine("OPERATION COMPLETE.", "output");
-            appendLine("ENTER ADMIN KEY TO DOCUMENT SESSION THROUGH TUNNEL:", "output");
-            appendLine("admin-key: ", "output");
-        }
-    }, 160);
-}
-
-function handleCommand(cmd) {
+function executeCommand(cmd) {
     if (!cmd) return;
-    appendLine(`admin@stratcom:~/admin$ ${cmd}`);
+    
+    append(`root@stratcom:~/admin$ ${cmd}`);
+    history.unshift(cmd);
+    historyIndex = -1;
 
     const lower = cmd.toLowerCase().trim();
 
-    if (lower === 'ls') {
-        appendLine("wallet.txt     zero-day.txt     server.root     exploit-chain.sh     hashdump.bin     recon-log-2026.txt", "output");
+    if (lower === 'help') {
+        append("Available commands: help, clear, ls, cat [file], whoami, pwd, date, exploit, balance, neofetch", "success");
     } 
-    else if (lower === '1' || lower.includes('zero') || lower.includes('day')) {
-        simulateLongOperation(1);
+    else if (lower === 'clear') {
+        output.innerHTML = '';
+        return;
     } 
-    else if (lower === '2' || lower.includes('exploit') || lower.includes('hash')) {
-        appendLine("ENTER TARGET WALLET ADDRESS (0x...):", "output");
-        setTimeout(() => simulateLongOperation(2), 900);
+    else if (lower === 'ls') {
+        append("wallet.txt     zero-day.txt     server.root     recon-log-2026.txt     hashdump.bin", "output");
+    } 
+    else if (lower.startsWith('cat ')) {
+        const file = lower.slice(4).trim();
+        if (filesystem[file]) {
+            append(filesystem[file]);
+        } else {
+            append(`cat: ${file}: No such file`, "error");
+        }
+    } 
+    else if (lower === 'whoami') {
+        append("root");
+    } 
+    else if (lower === 'pwd') {
+        append("/home/admin");
+    } 
+    else if (lower === 'date') {
+        append(new Date().toString());
+    } 
+    else if (lower === 'neofetch') {
+        append("     █████╗ ████████╗    STRATCOM ROOT");
+        append("    ██╔══██╗╚══██╔══╝    OS: Kali Linux 2026.2");
+        append("    ███████║   ██║       Kernel: x86_64");
+        append("    ██╔══██║   ██║       Uptime: 2 hours");
+        append("    ██║  ██║   ██║       Shell: stratcom-sh");
+        append("    ╚═╝  ╚═╝   ╚═╝       Status: COMPROMISED");
+    } 
+    else if (lower === 'exploit' || lower.includes('zero')) {
+        append("[+] Launching zero-day chain...", "success");
+        setTimeout(() => {
+            append("[+] Bypassing IDS...");
+            append("[+] Root shell acquired on target");
+            balance += 850;
+            document.getElementById('wallet-balance').textContent = balance;
+            append(`[+] Wallet updated: +$850 | New balance: $${balance}`, "success");
+        }, 800);
+    } 
+    else if (lower === 'balance') {
+        append(`Current balance: $${balance}`);
     } 
     else {
-        appendLine("Command received. Use 1 or 2 for active operations.", "output");
+        append("Command not found. Type 'help' for options.", "error");
     }
 }
 
 // Input handling
-const inputField = document.getElementById('term-input');
-inputField.addEventListener('keypress', function(e) {
+input.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
-        handleCommand(this.value);
-        this.value = '';
+        executeCommand(input.value);
+        input.value = '';
+    } 
+    else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (history.length > 0) {
+            historyIndex = Math.min(historyIndex + 1, history.length - 1);
+            input.value = history[historyIndex];
+        }
+    } 
+    else if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (historyIndex > 0) {
+            historyIndex--;
+            input.value = history[historyIndex];
+        } else {
+            historyIndex = -1;
+            input.value = '';
+        }
     }
 });
+
+// Auto focus
+document.addEventListener('click', () => input.focus());
 </script>
 </body>
 </html>
