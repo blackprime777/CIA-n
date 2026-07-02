@@ -3,351 +3,183 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>STRATCOM ROOT // KALI-SECURE v9.7</title>
+    <title>KALI LINUX • root@stratcom</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap');
-        
-        :root {
-            --green: #00ff41;
-            --dark: #0a0a0a;
-            --darker: #050505;
-        }
-        
-        * { box-sizing: border-box; }
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
         
         body {
             margin: 0;
-            padding: 0;
-            background: var(--darker);
-            color: var(--green);
-            font-family: 'Share Tech Mono', monospace;
+            background: #000;
+            color: #00ff41;
+            font-family: 'VT323', monospace;
             overflow: hidden;
             height: 100vh;
+            image-rendering: pixelated;
         }
         
-        /* LOGIN */
-        #login-screen {
-            position: fixed;
-            inset: 0;
-            background: radial-gradient(circle at center, #111 0%, #000 80%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-        
-        .login-box {
-            width: 100%;
-            max-width: 460px;
-            border: 2px solid var(--green);
-            background: rgba(10,10,10,0.97);
-            padding: 40px 30px;
-            box-shadow: 0 0 40px rgba(0,255,65,0.4);
-            text-align: center;
-        }
-        
-        .login-box h1 {
-            font-family: 'VT323', monospace;
-            font-size: 2.8em;
-            margin: 0 0 10px;
-            letter-spacing: 6px;
-            text-shadow: 0 0 10px var(--green);
-        }
-        
-        input {
-            background: #000;
-            border: 1px solid var(--green);
-            color: var(--green);
-            font-family: inherit;
-            font-size: 1.4em;
-            padding: 12px 16px;
-            width: 100%;
-            margin-bottom: 15px;
-            outline: none;
-        }
-        
-        button {
-            background: var(--green);
-            color: #000;
-            border: none;
-            padding: 14px 40px;
-            font-family: inherit;
-            font-size: 1.3em;
-            cursor: pointer;
-            width: 100%;
-            transition: all 0.2s;
-        }
-        
-        button:hover {
-            background: #fff;
-            box-shadow: 0 0 25px var(--green);
-        }
-        
-        /* HEADER */
         .header {
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            height: 52px;
-            background: #0a0a0a;
-            border-bottom: 3px solid var(--green);
+            background: #111;
+            padding: 8px 20px;
+            border-bottom: 2px solid #00ff41;
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            padding: 0 25px;
-            z-index: 900;
-            font-size: 1.1em;
-            user-select: none;
+            font-size: 1.3em;
         }
         
-        .status-dot { color: var(--green); animation: pulse 2s infinite; }
-        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
-        
-        /* TERMINAL */
         #terminal {
-            margin: 70px 20px 60px;
-            max-width: 1280px;
-            margin-left: auto;
-            margin-right: auto;
-            height: calc(100vh - 130px);
-            background: #0a0a0a;
-            border: 3px solid var(--green);
-            display: flex;
-            flex-direction: column;
-            box-shadow: inset 0 0 60px rgba(0, 255, 65, 0.08);
-        }
-        
-        #output {
-            flex: 1;
-            padding: 20px;
+            height: calc(100vh - 52px);
+            padding: 15px;
             overflow-y: auto;
-            font-size: 1.32em;
-            line-height: 1.5;
-            scrollbar-color: var(--green) #111;
+            font-size: 1.45em;
+            line-height: 1.4;
         }
         
-        #output::-webkit-scrollbar { width: 8px; }
-        #output::-webkit-scrollbar-thumb { background: var(--green); }
+        .prompt {
+            color: #00cc33;
+        }
         
-        .prompt-line {
+        .line {
             display: flex;
-            padding: 0 20px 12px;
-            background: #0a0a0a;
+            margin-bottom: 6px;
         }
         
-        .prompt { color: #00cc33; white-space: pre; }
-        .output { color: #aaffaa; }
-        .error { color: #ff6666; }
-        .success { color: #00ffaa; }
-        
-        #input-line {
+        #input {
             background: transparent;
             border: none;
-            color: var(--green);
+            color: #00ff41;
             font-family: inherit;
             font-size: inherit;
-            flex: 1;
             outline: none;
+            flex: 1;
         }
         
-        .scanline {
-            position: fixed;
-            inset: 0;
-            background: linear-gradient(transparent 50%, rgba(0,255,65,0.03) 50%);
-            background-size: 100% 6px;
-            pointer-events: none;
-            animation: scan 4s linear infinite;
-            z-index: 5;
-            opacity: 0.3;
-        }
+        .output { color: #aaffaa; }
+        .error { color: #ff5555; }
+        .success { color: #00ffaa; }
         
-        @keyframes scan { 0% { transform: translateY(-100%); } 100% { transform: translateY(400%); } }
-        
-        .disclaimer {
-            position: fixed;
-            bottom: 12px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.9em;
-            color: #004d00;
-            z-index: 800;
+        .blink {
+            animation: blink 1s step-end infinite;
         }
     </style>
 </head>
 <body>
-
-<!-- LOGIN -->
-<div id="login-screen">
-    <div class="login-box">
-        <h1>STRATCOM</h1>
-        <p>SECURE TUNNEL v9.7 — ROOT ACCESS</p>
-        <input type="text" value="admin" readonly>
-        <input type="password" id="pass" placeholder="ENTER PASSPHRASE" autofocus>
-        <button onclick="login()">AUTHENTICATE TUNNEL</button>
-        <div id="login-msg" style="margin-top:15px; min-height:24px; color:#ff4444;"></div>
-    </div>
-</div>
-
-<!-- MAIN -->
-<div id="main-ui" style="display:none; height:100vh;">
     <div class="header">
-        <div>
-            <span class="status-dot">●</span> ROOT@STRATCOM <span style="color:#00cc33;">LIVE</span>
-        </div>
-        <div id="live-time"></div>
-        <div>💼 $<span id="wallet-balance">1240</span>.00</div>
+        <div>root@stratcom: ~ # KALI LINUX 2026.2</div>
+        <div>● LIVE TUNNEL</div>
     </div>
-
-    <div id="terminal">
-        <div id="output"></div>
-        <div class="prompt-line">
-            <span class="prompt">root@stratcom:~/admin$ </span>
-            <input id="input-line" autocomplete="off" autofocus>
-        </div>
-    </div>
-</div>
-
-<div class="scanline"></div>
-<div class="disclaimer">SIMULATED ENVIRONMENT • SHA-256 TUNNELED • FOR TRAINING PURPOSES ONLY</div>
-
-<script>
-// Fake filesystem
-const filesystem = {
-    'wallet.txt': 'Current balance: $1240.00 | Last tx: 0xA3f...9kL2',
-    'zero-day.txt': 'CVE-2026-EXPLOIT-7 | Zero-day for latest Apache Struts variant',
-    'server.root': 'Access level: ROOT | Last compromised: 2 hours ago',
-    'recon-log-2026.txt': 'Targets: 47 active | High value: 12',
-    'hashdump.bin': '[BINARY DATA - 2.4GB] NTLM hashes extracted'
-};
-
-let balance = 1240;
-let history = [];
-let historyIndex = -1;
-
-const output = document.getElementById('output');
-const input = document.getElementById('input-line');
-
-function append(text, cls = 'output') {
-    const line = document.createElement('div');
-    line.className = cls;
-    line.textContent = text;
-    output.appendChild(line);
-    output.scrollTop = output.scrollHeight;
-}
-
-function login() {
-    if (document.getElementById('pass').value.trim() === "admin") {
-        document.getElementById('login-screen').style.display = 'none';
-        document.getElementById('main-ui').style.display = 'block';
-        initTerminal();
-        input.focus();
-    } else {
-        document.getElementById('login-msg').textContent = "ACCESS DENIED";
-        setTimeout(() => document.getElementById('login-msg').textContent = '', 2000);
-    }
-}
-
-function updateClock() {
-    const now = new Date();
-    document.getElementById('live-time').textContent = now.toLocaleString('en-GB', {timeZone: 'UTC'}) + " UTC";
-}
-setInterval(updateClock, 1000);
-updateClock();
-
-function initTerminal() {
-    append("STRATCOM ROOT v9.7 — TUNNEL ESTABLISHED", "success");
-    append("Type 'help' for available commands.");
-    append("");
-}
-
-function executeCommand(cmd) {
-    if (!cmd) return;
     
-    append(`root@stratcom:~/admin$ ${cmd}`);
-    history.unshift(cmd);
-    historyIndex = -1;
+    <div id="terminal"></div>
 
-    const lower = cmd.toLowerCase().trim();
-
-    if (lower === 'help') {
-        append("Available commands: help, clear, ls, cat [file], whoami, pwd, date, exploit, balance, neofetch", "success");
-    } 
-    else if (lower === 'clear') {
-        output.innerHTML = '';
-        return;
-    } 
-    else if (lower === 'ls') {
-        append("wallet.txt     zero-day.txt     server.root     recon-log-2026.txt     hashdump.bin", "output");
-    } 
-    else if (lower.startsWith('cat ')) {
-        const file = lower.slice(4).trim();
-        if (filesystem[file]) {
-            append(filesystem[file]);
-        } else {
-            append(`cat: ${file}: No such file`, "error");
+    <script>
+        const terminal = document.getElementById('terminal');
+        let currentDir = '~';
+        let history = [];
+        let historyIndex = -1;
+        
+        const filesystem = {
+            '~': ['tools/', 'targets/', 'loot/', 'exploits/'],
+            'tools/': ['nmap', 'hydra', 'metasploit', 'gobuster'],
+            'targets/': ['192.168.1.100', '10.0.0.45'],
+            'loot/': ['passwords.txt', 'hashes.bin']
+        };
+        
+        function print(text, cls = 'output') {
+            const line = document.createElement('div');
+            line.className = cls;
+            line.textContent = text;
+            terminal.appendChild(line);
+            terminal.scrollTop = terminal.scrollHeight;
         }
-    } 
-    else if (lower === 'whoami') {
-        append("root");
-    } 
-    else if (lower === 'pwd') {
-        append("/home/admin");
-    } 
-    else if (lower === 'date') {
-        append(new Date().toString());
-    } 
-    else if (lower === 'neofetch') {
-        append("     █████╗ ████████╗    STRATCOM ROOT");
-        append("    ██╔══██╗╚══██╔══╝    OS: Kali Linux 2026.2");
-        append("    ███████║   ██║       Kernel: x86_64");
-        append("    ██╔══██║   ██║       Uptime: 2 hours");
-        append("    ██║  ██║   ██║       Shell: stratcom-sh");
-        append("    ╚═╝  ╚═╝   ╚═╝       Status: COMPROMISED");
-    } 
-    else if (lower === 'exploit' || lower.includes('zero')) {
-        append("[+] Launching zero-day chain...", "success");
-        setTimeout(() => {
-            append("[+] Bypassing IDS...");
-            append("[+] Root shell acquired on target");
-            balance += 850;
-            document.getElementById('wallet-balance').textContent = balance;
-            append(`[+] Wallet updated: +$850 | New balance: $${balance}`, "success");
-        }, 800);
-    } 
-    else if (lower === 'balance') {
-        append(`Current balance: $${balance}`);
-    } 
-    else {
-        append("Command not found. Type 'help' for options.", "error");
-    }
-}
-
-// Input handling
-input.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-        executeCommand(input.value);
-        input.value = '';
-    } 
-    else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        if (history.length > 0) {
-            historyIndex = Math.min(historyIndex + 1, history.length - 1);
-            input.value = history[historyIndex];
+        
+        function prompt() {
+            const line = document.createElement('div');
+            line.className = 'line';
+            line.innerHTML = `<span class="prompt">root@stratcom:${currentDir}# </span><input id="input" autocomplete="off" autofocus>`;
+            terminal.appendChild(line);
+            const input = line.querySelector('#input');
+            
+            input.focus();
+            
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    const cmd = input.value.trim();
+                    if (cmd) {
+                        history.unshift(cmd);
+                        historyIndex = -1;
+                        execute(cmd);
+                    }
+                    input.remove();
+                    prompt();
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    if (history.length > 0) {
+                        historyIndex = Math.min(historyIndex + 1, history.length - 1);
+                        input.value = history[historyIndex];
+                    }
+                } else if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    if (historyIndex > 0) {
+                        historyIndex--;
+                        input.value = history[historyIndex];
+                    } else {
+                        historyIndex = -1;
+                        input.value = '';
+                    }
+                }
+            });
         }
-    } 
-    else if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        if (historyIndex > 0) {
-            historyIndex--;
-            input.value = history[historyIndex];
-        } else {
-            historyIndex = -1;
-            input.value = '';
+        
+        function execute(cmd) {
+            print(`root@stratcom:${currentDir}# ${cmd}`);
+            
+            const parts = cmd.toLowerCase().trim().split(' ');
+            const command = parts[0];
+            
+            switch(command) {
+                case 'help':
+                    print("Available: ls, cd, pwd, cat, nmap, hydra, msfconsole, clear, whoami, ifconfig", "success");
+                    break;
+                case 'ls':
+                    print(filesystem[currentDir] ? filesystem[currentDir].join('   ') : "Nothing here.");
+                    break;
+                case 'pwd':
+                    print("/home/kali" + (currentDir === '~' ? '' : '/' + currentDir));
+                    break;
+                case 'clear':
+                    terminal.innerHTML = '';
+                    break;
+                case 'whoami':
+                    print("root");
+                    break;
+                case 'ifconfig':
+                    print("eth0: 10.13.37.42  inet addr:10.13.37.42");
+                    break;
+                case 'nmap':
+                    print("[+] Starting Nmap 7.92...", "success");
+                    setTimeout(() => print("PORT   STATE SERVICE\n22/tcp open  ssh\n80/tcp open  http\n445/tcp open  microsoft-ds"), 800);
+                    break;
+                case 'hydra':
+                    print("[+] Hydra v9.5 launching brute force...", "success");
+                    setTimeout(() => print("[+] Password found: admin123"), 1200);
+                    break;
+                case 'msfconsole':
+                    print("[*] Starting Metasploit Framework...", "success");
+                    setTimeout(() => print("[+] Exploit successful - Meterpreter session opened"), 1500);
+                    break;
+                case 'cat':
+                    if (parts[1] === 'passwords.txt') print("admin:password123\nroot:toor");
+                    else print("File not found or empty.");
+                    break;
+                default:
+                    print(`bash: ${command}: command not found`, "error");
+            }
         }
-    }
-});
-
-// Auto focus
-document.addEventListener('click', () => input.focus());
-</script>
+        
+        // Start
+        print("Welcome to Kali Linux 2026.2 (rolling) x86_64");
+        print("Last login: Today");
+        print("");
+        prompt();
+    </script>
 </body>
 </html>
